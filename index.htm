@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>镜像 | Mirror</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e0e0;
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 30px;
+            min-height: 100vh;
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .title h1 {
+            font-size: 3.5em;
+            font-weight: 200;
+            letter-spacing: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .title .subtitle {
+            font-size: 1.1em;
+            color: #8892b0;
+            letter-spacing: 4px;
+            font-weight: 300;
+        }
+
+        .story-section {
+            background: rgba(30, 30, 60, 0.6);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .story-section h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            font-weight: 400;
+            letter-spacing: 2px;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+            padding-bottom: 15px;
+        }
+
+        .story-section p {
+            margin-bottom: 20px;
+            font-size: 1.05em;
+            color: #ccd6f6;
+            text-align: justify;
+        }
+
+        .choices {
+            display: grid;
+            gap: 15px;
+            margin-top: 35px;
+        }
+
+        .choice-btn {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 2px solid rgba(102, 126, 234, 0.4);
+            color: #ccd6f6;
+            padding: 20px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.05em;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .choice-btn:hover::before {
+            left: 100%;
+        }
+
+        .choice-btn:hover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            transform: translateX(10px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .data-panel {
+            background: rgba(20, 20, 40, 0.8);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .data-panel h3 {
+            color: #667eea;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 5px;
+        }
+
+        .data-label {
+            color: #8892b0;
+        }
+
+        .data-value {
+            color: #64ffda;
+            font-weight: bold;
+        }
+
+        .warning {
+            color: #ff6b6b;
+        }
+
+        .spread-monitor {
+            background: rgba(20, 20, 40, 0.9);
+            border: 2px solid rgba(255, 107, 107, 0.4);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .spread-monitor h3 {
+            color: #ff6b6b;
+            font-size: 1.4em;
+            margin-bottom: 25px;
+            text-align: center;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .spread-bar-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            height: 40px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .spread-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #ff6b6b 50%, #ff0000 100%);
+            border-radius: 20px;
+            transition: width 2s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .spread-percentage {
+            color: white;
+            font-weight: bold;
+            font-size: 1.1em;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .spread-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .spread-detail-item {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .spread-detail-item h4 {
+            color: #667eea;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .spread-detail-item p {
+            color: #ccd6f6;
+            font-size: 1.1em;
+            margin: 0;
+        }
+
+        .map-placeholder {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-placeholder::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            animation: scan 3s infinite;
+        }
+
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .map-placeholder svg {
+            width: 100%;
+            height: 200px;
+            opacity: 0.6;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(255, 107, 107, 0.8);
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .timestamp {
+            color: #8892b0;
+            font-size: 0.9em;
+            font-style: italic;
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .highlight {
+            color: #64ffda;
+            font-weight: 500;
+        }
+
+        .tech-term {
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .ending {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 12px;
+            margin-top: 40px;
+        }
+
+        .ending h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .ending p {
+            color: #ccd6f6;
+            font-size: 1.1em;
+            line-height: 2;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">
+            <h1>镜像</h1>
+            <p class="subtitle">MIRROR</p>
+        </div>
+
+        <div id="game-content"></div>
+    </div>
+
+    <script>
+        const gameData = {
+            start: {
+                title: "火星地球化计划",
+                content: `2087年，人类的火星改造计划已经进行了四十三年。
+
+早期的尝试都失败了。化学方法太慢，需要数千年才能建立起稳定的大气层。核爆破融化极冠的方案在2051年被永久否决——放射性污染会让火星在未来两万年内不适合人类居住。生物工程菌株的表现也令人失望，它们要么在严酷的火星环境中迅速死亡,要么进化出意想不到的代谢路径，产生对人类有害的化合物。
+
+2069年，突破来自一个意外的方向。
+
+中国科学院合成生物学研究所的团队在研究手性反转技术时，创造出了第一批稳定的<span class="tech-term">镜像蓝藻</span>。这些生物的所有氨基酸都是D型（右旋），而非地球生命标准的L型（左旋）。它们的核糖核酸也完全镜像——使用左旋核糖而非右旋。
+
+从生物化学角度来说，这些蓝藻和地球生命完全不兼容。它们无法利用地球上的任何有机物质作为营养，地球上的任何生物也无法消化它们。病毒无法感染它们，因为病毒的识别机制完全依赖于特定的手性。它们也无法与地球生态系统发生任何有意义的相互作用。
+
+但它们可以进行光合作用。它们可以把二氧化碳转化为氧气。
+
+更重要的是，在火星的低温、低压、高辐射环境下，它们表现出了惊人的适应性。实验室测试显示，镜像蓝藻在零下60摄氏度仍能保持代谢活动，在真空环境下可以休眠数年后复苏。
+
+2073年，第一批镜像蓝藻被送往火星。`,
+                data: {
+                    项目代号: "红色曙光",
+                    首批投放量: "2000吨镜像蓝藻孢子",
+                    投放地点: "火星北极永久冰盖区域",
+                    预期目标: "100年内建立初步氧气循环"
+                },
+                choices: [
+                    { text: "→ 继续了解火星改造进展", next: "mars_progress" }
+                ]
+            },
+
+            mars_progress: {
+                title: "意外的成功",
+                content: `镜像蓝藻的表现超出了所有人的预期。
+
+它们在火星土壤中疯狂生长。没有天敌，没有竞争对手，没有任何生物能够以它们为食。火星的高二氧化碳浓度（95%）对它们来说是完美的生长条件。它们形成了厚厚的生物膜，覆盖在极地冰盖的表面，在夏季融水中大量繁殖。
+
+到2080年，火星大气中的氧气含量从0.13%上升到了1.2%。这比计划提前了六十年。
+
+到2085年，火星赤道地区开始出现季节性的液态水。镜像蓝藻沿着这些水道扩散，在火星表面形成了可见的绿色条纹。从轨道上看，火星不再是完全的红色星球。
+
+国际火星殖民委员会开始制定2090年代首批永久定居者的计划。建筑材料和生命支持系统已经在轨道上待命。人类即将成为真正的多行星物种。
+
+但没有人想到要问一个问题：如果镜像生命回到地球，会发生什么？`,
+                data: {
+                    火星大气氧含量: "1.2%（地球为21%）",
+                    地表温度: "夏季最高-15°C",
+                    镜像蓝藻覆盖面积: "约470万平方公里",
+                    状态: "改造进程超前于计划67年"
+                },
+                choices: [
+                    { text: "→ 了解肖薇的工作", next: "xiaowei_intro" }
+                ]
+            },
+
+            xiaowei_intro: {
+                title: "风险评估专家",
+                content: `肖薇是火星计划的生物安全顾问。
+
+她的工作是评估各种理论上的风险场景：镜像蓝藻的孢子是否可能搭载返航飞船回到地球？如果回来了，能否在地球环境中存活？会对地球生态系统造成什么影响？
+
+她花了三年时间建立了一个详细的数学模型，模拟镜像生命在地球各种环境中的可能行为。模型的结论很明确：镜像蓝藻即使回到地球，也无法在竞争激烈的地球生态系统中立足。
+
+地球上有数万种藻类、细菌和浮游生物，它们经过亿万年的进化，已经占据了所有可能的生态位。它们会迅速消耗掉所有可用的光照和营养物质。镜像蓝藻无法与它们竞争，因为它的代谢效率在地球环境下并不占优势。
+
+而且，镜像蓝藻无法利用地球上的任何有机物。它必须完全依靠光合作用，从零开始合成所有需要的分子。这在火星那样的贫瘠环境中是优势，但在地球上是致命的劣势。
+
+2087年3月，肖薇向国际火星殖民委员会提交了最终报告：《镜像生命地球污染风险评估》。报告的结论是，即使发生最坏的情况，风险也在可接受范围内。
+
+她建议继续推进火星改造计划。
+
+两周后，"拓荒者7号"货运飞船从火星起飞，满载着用于建设首座火星永久基地的设备。`,
+                timestamp: "2087年3月15日",
+                choices: [
+                    { text: "→ 三个月后", next: "accident" }
+                ]
+            },
+
+            accident: {
+                title: "事故",
+                content: `"拓荒者7号"在进入地球轨道时出现了姿态控制故障。
+
+自动系统试图修正，但推进器的响应延迟了0.3秒。在太空中，0.3秒足以改变一切。飞船的轨道倾角偏离了预定值，开始了一个缓慢的螺旋下降。
+
+地面控制中心发出了十七次修正指令。飞船执行了前十六次，但在第十七次时，姿态控制系统完全失灵。
+
+六月十日凌晨4点37分，"拓荒者7号"在大气层中解体。大部分残骸在太平洋上空烧毁。但有一些碎片——装载建筑材料的货舱——生存了下来。
+
+它们落在北纬35度，东经140度。
+
+日本，茨城县外海。
+
+货舱在水中破裂，释放出了火星土壤样品。那些样品原本是要用于研究火星土壤的农业潜力。它们被密封在特殊容器中，容器设计能够承受再入大气层的高温。
+
+但设计师没有考虑到盐水腐蚀。
+
+三天后，第一批镜像蓝藻的孢子在太平洋中苏醒。`,
+                timestamp: "2087年6月10日",
+                choices: [
+                    { text: "→ 查看事故报告", next: "accident_report" }
+                ]
+            },
+
+            accident_report: {
+                title: "官方调查",
+                content: `肖薇在事故后第五天收到了调查委员会的简报。
+
+货运飞船的坠毁区域已经被海上保安厅封锁。打捞队在水下150米处找到了主要残骸。初步检查显示，十二个生物样品容器中有九个完好无损。
+
+剩下的三个容器外壳破裂，但内部的密封膜看起来仍然完整。技术团队正在准备特殊的打捞设备，计划在一周内将所有容器回收。
+
+"完全可控，"调查报告写道，"我们有充足的时间执行标准的生物隔离程序。"
+
+但肖薇注意到了报告里没有写的东西：这片海域的水温是18摄氏度。盐度是3.4%。光照强度在晴天可以穿透到水下200米。
+
+这些数字在她的脑海中组成了一个等式。她打开了自己的风险评估模型，输入了新的参数。
+
+模型用了三十秒钟计算。
+
+然后它给出了一个她从未见过的警告：<span class="warning">初始种群建立概率：78%</span>。`,
+                data: {
+                    坠毁位置: "北纬35.2°, 东经140.1°",
+                    水深: "150-200米",
+                    破损容器: "3个（密封状态未知）",
+                    打捞时间表: "7天内完成回收"
+                },
+                choices: [
+                    { text: "建议立即扩大搜索范围", next: "warning_ignored" },
+                    { text: "等待官方打捞完成", next: "warning_ignored" }
+                ]
+            },
+
+            warning_ignored: {
+                title: "扩散",
+                content: `肖薇连夜写了一份紧急建议书，要求立即在坠毁点半径50公里范围内进行海水采样检测。
+
+她的建议在委员会会议上被礼貌地搁置了。"我们理解您的谨慎，肖博士，"主席说，"但打捞工作已经在进行。没有必要造成公众恐慌。"
+
+六月二十三日，打捞队完成了任务。十二个容器都被回收，送往筑波市的国家生物安全实验室。
+
+检测结果证实了技术团队的判断：九个容器完好无损。另外三个容器的外壳确实破裂了，但内部的样品已经完全失活——在海水中浸泡了十三天后，火星土壤样品中没有检测到任何活性的镜像蓝藻。
+
+"虚惊一场，"官方声明说。
+
+但肖薇拿到了另一份数据：在打捞过程中，潜水员采集了六份海水样品。这些样品作为常规程序的一部分，被送到了她的实验室进行分析。
+
+她在显微镜下看到了它们。
+
+镜像蓝藻。活的。在分裂。
+
+数量还很少——每升海水中大约只有500个细胞。但它们确实在那里。而且它们在繁殖。`,
+                timestamp: "2087年6月23日",
+                choices: [
+                    { text: "→ 立即上报发现", next: "first_detection" }
+                ]
+            },
+
+            first_detection: {
+                title: "初次检测",
+                content: `肖薇的报告引起了短暂的骚动。
+
+日本环境省派出了专业调查船，在坠毁点周围100平方公里的海域进行了为期一周的密集采样。他们使用了最先进的过滤和检测设备，每天分析超过200个样品。
+
+结果让人稍微放心了一些：镜像蓝藻确实存在，但浓度很低。在大多数采样点，每升海水中只能检测到几百到几千个细胞。只有在坠毁点正下方的区域，浓度才达到每升10万个细胞。
+
+对照组数据显示，正常的太平洋海水中，浮游植物的密度可以达到每升数百万到数千万个细胞。
+
+"数量级差异太大了，"环境省的首席科学家在记者会上说，"镜像蓝藻在海洋生态系统中完全处于劣势。它们会被稀释，会被洋流冲散。我们会继续监测,但这不构成生态威胁。"
+
+肖薇想说点什么，但她意识到自己没有反驳的证据。也许模型是错的。也许镜像生命真的无法在地球上立足。
+
+她要求在坠毁点设置长期监测浮标，每天自动采集海水样品并分析镜像蓝藻的浓度。环境省同意了。
+
+七月到九月，浮标记录了十二周的数据。镜像蓝藻的浓度一直维持在每升3000到8000个细胞之间，没有显著的增长或减少趋势。
+
+肖薇开始怀疑自己是不是过度反应了。`,
+                timestamp: "2087年7月-9月",
+                choices: [
+                    { text: "→ 查看监测数据", next: "monitoring_data" }
+                ]
+            },
+
+            monitoring_data: {
+                title: "异常信号",
+                content: `十月初,肖薇注意到了一个细节。
+
+监测浮标的数据显示，镜像蓝藻的浓度在白天会上升，在夜间会下降。这符合光合生物的正常昼夜节律——白天进行光合作用和繁殖，夜间代谢减慢。
+
+但下降的幅度不对。
+
+如果只是代谢减慢，浓度应该保持相对稳定。但数据显示，每天夜间都有大约40%的镜像蓝藻"消失"了。到了第二天早上，浓度又恢复到前一天白天的水平。
+
+她调出了更详细的数据，包括水温、盐度、溶解氧、营养盐浓度、浮游动物密度。她把这些变量一个一个地排除。
+
+最后她发现，消失的镜像蓝藻和水流速度有关。
+
+每天夜间，黑潮的一个分支会经过这片海域。海水流速会从每秒5厘米增加到每秒20厘米。镜像蓝藻的浓度下降幅度和流速的增加幅度完全匹配。
+
+它们没有消失。
+
+它们在扩散。`,
+                data: {
+                    监测周期: "2087年7月1日-9月30日",
+                    平均浓度: "5400细胞/升",
+                    昼夜波动: "±40%",
+                    水流速度: "5-20厘米/秒（夜间）"
+                },
+                choices: [
+                    { text: "→ 扩大监测范围", next: "expand_monitoring" }
+                ]
+            },
+
+            expand_monitoring: {
+                title: "追踪洋流",
+                content: `肖薇申请了紧急经费，在黑潮分支的路径上增设了五个监测点。
+
+第一个监测点在坠毁点以南50公里。第二个在100公里。第三个在200公里。第四个在500公里。第五个在冲绳本岛以东，距离原点1200公里。
+
+十月十五日，南向监测点开始传回数据。
+
+50公里处：每升2100个细胞。
+100公里处：每升890个细胞。
+200公里处：每升340个细胞。
+
+浓度随距离递减，符合扩散模型的预测。肖薇稍微松了口气。也许扩散速度比她想象的要慢。也许镜像蓝藻会在某个临界距离后完全被稀释。
+
+但十一月的数据改变了一切。
+
+200公里处的浓度开始上升。从340个细胞/升，到580个，到1100个，到2400个。
+
+500公里处的监测点也开始检测到信号。最初只有每升几十个细胞，但一周之后达到了200个。
+
+肖薇调出了洋流模型。黑潮在这片海域形成了一个大型的环流结构。它从坠毁点向南流动，然后在琉球群岛附近向东转向，最后在日本本州以南回转向北。
+
+整个环流的周期大约是45天。
+
+这意味着，镜像蓝藻正在沿着一个封闭的循环路径不断积累。`,
+                timestamp: "2087年10月-11月",
+                choices: [
+                    { text: "→ 查看扩散模拟", next: "spread_begins" }
+                ]
+            },
+
+            spread_begins: {
+                title: "全球监测启动",
+                content: `十二月，肖薇的发现终于引起了国际海洋组织的重视。
+
+日本、中国、韩国、美国和欧盟联合启动了"镜像生命海洋监测项目"。在西太平洋设置了237个自动监测浮标，覆盖从日本海到南中国海的整个区域。每个浮标每天采集四次海水样品，实时分析镜像蓝藻的浓度，并通过卫星传输数据。
+
+数据被汇总到一个中央数据库，由人工智能系统进行实时分析。任何异常的浓度增长都会触发警报。
+
+肖薇成为了监测项目的首席科学顾问。她要求建立一个公开的数据仪表板，让所有人都能看到镜像蓝藻的扩散情况。
+
+2088年1月1日，仪表板上线。
+
+它显示了一个渐变的热力图，覆盖在西太平洋的地图上。蓝色表示低浓度，绿色表示中等浓度，黄色表示高浓度，红色表示超出警戒阈值。
+
+最初，地图上只有坠毁点附近的一小块绿色区域。
+
+但随着时间推移，绿色开始蔓延。`,
+                timestamp: "2087年12月 - 2088年1月",
+                choices: [
+                    { text: "→ 观察扩散趋势", next: "spread_accelerates" }
+                ]
+            },
+
+            spread_accelerates: {
+                title: "指数增长",
+                content: `二月，镜像蓝藻的扩散速度突然加快了。
+
+在坠毁点周围500公里的核心区域，浓度已经从每升几千个细胞上升到了几万个。在某些局部海域——特别是洋流交汇处——浓度甚至超过了每升10万个细胞。
+
+肖薇的团队分析了水样的详细成分。他们发现，镜像蓝藏正在改变周围的化学环境。
+
+它们通过光合作用释放氧气，降低了水中的二氧化碳浓度。这本身不是问题——正常的藻类也做同样的事情。但镜像蓝藻还分泌一种特殊的多糖，这种物质在地球生物化学中不存在。它的手性结构让地球上的任何酶都无法分解它。
+
+多糖在水中聚集，形成了微小的胶状颗粒。这些颗粒为镜像蓝藻提供了附着点，让它们能够形成更稳定的群落结构。
+
+更糟糕的是，这些胶状颗粒会吸附营养物质——特别是硝酸盐和磷酸盐。它们从地球藻类手中夺走了养分。
+
+三月，第一份生态影响报告出炉。在镜像蓝藻浓度超过每升5万个细胞的海域，正常浮游植物的密度下降了15-20%。`,
+                choices: [
+                    { text: "→ 查看扩散监测仪表板", next: "dashboard_5percent" }
+                ]
+            },
+
+            dashboard_5percent: {
+                title: "全球监测：第一阶段",
+                content: `监测系统显示，镜像生命已经在西太平洋建立了稳定的种群。`,
+                spreadData: {
+                    percentage: 5,
+                    ocean_coverage: "西太平洋核心区域",
+                    peak_concentration: "12万细胞/升",
+                    affected_regions: "日本南部海域、东海北部",
+                    ecosystem_impact: "局部浮游植物密度下降15-20%"
+                },
+                choices: [
+                    { text: "→ 继续监测", next: "first_bloom" }
+                ]
+            },
+
+            first_bloom: {
+                title: "第一次大爆发",
+                content: `四月，水温开始上升。春季的阳光变得更强，光照时间延长。
+
+对于所有光合生物来说，这都是最好的季节。但镜像蓝藻的响应超出了所有模型的预测。
+
+在冲绳以东的一片海域，镜像蓝藻的浓度在两周内从每升8万个细胞暴增到每升200万个。海水变成了深绿色。从卫星图像上可以清晰地看到一大片不自然的绿色斑块，面积超过1000平方公里。
+
+这是第一次"镜像藻华"。
+
+传统的藻华通常是某种地球藻类的大规模繁殖，持续几天到几周后，会因为营养耗尽或被浮游动物捕食而消退。但镜像藻华没有天敌。没有任何地球生物能够吃掉镜像蓝藻——它们的细胞壁、蛋白质、多糖全都是反向的手性，无法被任何已知的酶分解。
+
+藻华持续了整整一个月。在这期间，受影响海域的正常浮游植物几乎完全消失了。溶解氧浓度下降了30%，因为夜间镜像蓝藻的呼吸作用消耗了大量氧气。
+
+渔民报告，鱼群避开了这片海域。
+
+五月中旬，藻华终于因为营养耗尽而消退。但镜像蓝藻没有消失——它们进入了休眠状态，以孢子的形式沉降到海底。
+
+肖薇知道，到明年春天，它们会再次苏醒。`,
+                timestamp: "2088年4月-5月",
+                choices: [
+                    { text: "→ 评估生态影响", next: "ecosystem_assessment" }
+                ]
+            },
+
+            ecosystem_assessment: {
+                title: "生态系统的反应",
+                content: `国际海洋生态研究联盟发布了第一份全面的影响评估报告。
+
+数据令人不安。
+
+在镜像蓝藻浓度持续超过每升10万个细胞的海域（占西太平洋总面积的约3%），浮游植物的物种多样性下降了28%。一些对营养盐竞争敏感的物种——特别是某些硅藻和甲藻——已经在这些区域完全消失。
+
+浮游动物也受到了影响。虽然它们无法直接食用镜像蓝藻，但浮游植物的减少导致了食物链的断裂。小型桡足类和磷虾的数量下降了18-25%。
+
+更深层的影响正在显现。在食物链的更高层，研究人员观察到某些鱼类的洄游路线发生了变化。秋刀鱼和鲭鱼开始避开镜像蓝藻浓度高的区域，这改变了它们传统的产卵地。
+
+日本和韩国的渔业协会报告，春季的渔获量比往年减少了12%。
+
+但报告也指出，影响仍然是局部的。全球海洋是巨大的——总面积3.6亿平方公里。即使镜像蓝藻扩散到整个西太平洋，也只占全球海洋的不到2%。
+
+"可控，"报告的执行摘要这样写，"需要持续监测,但不构成全球性生态灾难。"
+
+肖薇看着报告，想起了一个古老的寓言：温水煮青蛙。`,
+                data: {
+                    浮游植物多样性: "↓28%（高浓度区域）",
+                    浮游动物数量: "↓18-25%（核心影响区）",
+                    渔业产量: "↓12%（日韩春季渔获）",
+                    海域面积: "影响区约占西太平洋3%"
+                },
+                choices: [
+                    { text: "→ 六个月后", next: "dashboard_15percent" }
+                ]
+            },
+
+            dashboard_15percent: {
+                title: "全球监测：第二阶段",
+                content: `2088年11月，监测系统记录到镜像蓝藻的显著扩张。
+
+它们已经突破了西太平洋的边界，开始进入印度洋和南太平洋。在赤道洋流的推动下，孢子随着水流传播到了越来越远的地方。
+
+第二次大规模藻华在南中国海爆发。第三次在菲律宾海。第四次在印度尼西亚群岛以东。
+
+每一次藻华都会在海底留下大量休眠孢子。这些孢子可以在沉积物中存活数年，等待合适的条件再次萌发。`,
+                spreadData: {
+                    percentage: 15,
+                    ocean_coverage: "西太平洋、南中国海、东印度洋北部",
+                    peak_concentration: "350万细胞/升",
+                    affected_regions: "日本、韩国、中国东南沿海、菲律宾、印度尼西亚",
+                    ecosystem_impact: "区域性浮游生物群落结构改变，渔业产量持续下降"
+                },
+                choices: [
+                    { text: "→ 一年后", next: "global_spread" }
+                ]
+            },
+
+            global_spread: {
+                title: "全球扩散",
+                content: `2089年，镜像蓝藻已经出现在地球上的每一个主要海洋。
+
+它们顺着洋流系统传播。从西太平洋进入北太平洋，跟随黑潮延伸带到达北美西海岸。从印度洋进入大西洋，通过好望角绕过非洲。从南太平洋进入南大洋，在南极绕极流中快速扩散。
+
+极地是它们最喜欢的栖息地。在南极洲周围的冰冷海水中，镜像蓝藻表现出了惊人的适应性。它们可以在零下1.8摄氏度的海水中（这是盐水的冰点）保持活跃的代谢。
+
+在北极，它们找到了另一个理想的环境。夏季的极昼提供了近乎无限的光照，融化的海冰释放了大量营养物质。镜像蓝藻在北冰洋的边缘海域形成了广阔的绿色带。
+
+赤道海域的情况更复杂。那里的温度对镜像蓝藻来说有点太高了，而且本地浮游植物的竞争也更激烈。但在上升流区域——那些深层冷水上涌、带来丰富营养的地方——镜像蓝藻仍然能够建立稳定的种群。
+
+到年底，全球海洋监测网络在1847个监测点中的1203个检测到了镜像蓝藻。`,
+                timestamp: "2089年",
+                choices: [
+                    { text: "→ 查看全球扩散数据", next: "dashboard_45percent" }
+                ]
+            },
+
+            dashboard_45percent: {
+                title: "全球监测：临界点",
+                content: `监测系统发出了第一次全球性警告。
+
+镜像蓝藻的全球生物量已经达到了地球浮游植物总量的约4-5%。这个数字看起来不大，但影响是非线性的。
+
+在它们高度集中的区域——大约占全球海洋面积的15%——正常的浮游植物群落几乎完全崩溃。这些区域正在变成生态荒漠,只有镜像蓝藻在那里生长。
+
+而且，这些区域正在扩大。`,
+                spreadData: {
+                    percentage: 45,
+                    ocean_coverage: "所有主要海洋",
+                    peak_concentration: "800万细胞/升",
+                    affected_regions: "全球沿海区域、极地海域、主要上升流区",
+                    ecosystem_impact: "15%海域浮游生物群落崩溃，全球渔业产量下降35%"
+                },
+                choices: [
+                    { text: "→ 国际紧急会议", next: "emergency_meeting" }
+                ]
+            },
+
+            emergency_meeting: {
+                title: "紧急对策讨论",
+                content: `2090年3月，联合国在日内瓦召开了"镜像生命危机国际会议"。
+
+七十三个国家的代表、两百多名科学家、三十个环保组织——所有人都在寻找同一个问题的答案：我们能做什么？
+
+化学控制方案被第一个否决。任何能杀死镜像蓝藻的化学物质也会杀死正常的浮游植物。这会造成比镜像蓝藻更严重的生态灾难。
+
+生物控制也行不通。地球上没有任何生物能够捕食镜像蓝藻。创造一个新的镜像捕食者？这需要数十年的研究，而且可能会引入更大的风险。
+
+物理清除？海洋太大了。即使动用全球所有的过滤设备，也无法在有意义的规模上清除镜像蓝藻。
+
+有人提出了一个激进的方案：在严重受影响的海域释放基因工程病毒，专门感染镜像蓝藻。但这需要首先开发出一个完全新的病毒系统——能够识别镜像手性的病毒，这在理论上可能，但在实践中完全未知。
+
+会议进行了三天。最后通过了一个折中方案：建立"镜像生命控制区"，在某些关键海域（重要渔场、海洋保护区、生物多样性热点）实施密集监测和局部清除。
+
+但所有人都知道，这只是象征性的努力。
+
+肖薇在会议的最后一天发言。她没有谈论控制方案。她只是展示了一张图表——镜像蓝藻在过去三年的扩散曲线。
+
+曲线是指数型的。
+
+"我们已经失去了遏制的机会，"她平静地说，"现在的问题不是如何消除它，而是如何与它共存。"`,
+                timestamp: "2090年3月",
+                choices: [
+                    { text: "思考深海的可能性", next: "deep_ocean_question" },
+                    { text: "继续监测浅海扩散", next: "surface_monitoring" }
+                ]
+            },
+
+            deep_ocean_question: {
+                title: "未知的深度",
+                content: `会议结束后，肖薇申请了一个新的研究项目。
+
+所有的监测数据都来自海洋表层——水下200米以内的真光层，那里有足够的阳光进行光合作用。但海洋平均深度是3800米。真光层以下是广阔的黑暗世界。
+
+镜像蓝藻需要阳光才能生长。理论上，它们不应该能在深海生存。
+
+但肖薇记得，镜像蓝藻可以形成休眠孢子。这些孢子在完全黑暗和低温环境下可以存活数年——它们在火星上就是这样度过漫长的冬季的。
+
+如果孢子沉降到深海，如果它们在那里找到了某种方式……
+
+她联系了几个深海研究机构，请求他们在常规的深海考察中采集一些底层水样和沉积物样本，检测镜像蓝藻的存在。
+
+起初没有人认真对待这个请求。深海探索成本高昂，没有人愿意为了寻找"可能不存在"的东西浪费宝贵的船时和潜水器时间。
+
+但肖薇很有耐心。她一个一个地联系，解释，请求。最终，有三个研究项目同意了——更多是出于礼貌,而不是真正相信会有发现。
+
+2090年7月，第一批深海样品送到了她的实验室。
+
+样品来自日本海沟，深度3200米。水温2.3摄氏度。完全黑暗。压强是海平面的320倍。
+
+肖薇把样品放在显微镜下。
+
+她看到了镜像蓝藻的孢子。
+
+数量不多——每升水中只有几十个。但它们在那里。而且，当她把孢子转移到有光照的培养基中时，它们复苏了，开始分裂。`,
+                timestamp: "2090年7月",
+                choices: [
+                    { text: "→ 调查深海热泉", next: "hydrothermal_vents" }
+                ]
+            },
+
+            surface_monitoring: {
+                title: "表层监测继续",
+                content: `监测系统显示，表层海域的镜像蓝藻浓度已经稳定在一个新的平衡点。
+
+它们没有继续无限增长——毕竟，即使是镜像蓝藻也受到营养盐、光照和空间的限制。但这个新的平衡点比2087年的海洋生态系统完全不同。
+
+在全球大约30%的海域，镜像蓝藻已经成为主要的初级生产者，取代了原有的浮游植物。这些区域的生态系统发生了根本性的重组——食物链的底层被切断了，只有那些能够适应新环境的物种存活了下来。
+
+但令人惊讶的是，海洋并没有死亡。
+
+一些物种找到了适应的方法。某些细菌开始进化出能够分解镜像蓝藻分泌的多糖的酶——虽然这些酶的效率很低，但这是地球生命第一次展现出利用镜像生物化学的能力。
+
+一些浮游动物学会了避开镜像蓝藻高浓度的区域，转而聚集在仍然有正常浮游植物的海域。
+
+海洋生态系统正在重组，而不是崩溃。
+
+但肖薇注意到了一个令人不安的趋势：监测数据显示，在过去六个月里，有几个深海监测站报告了微弱但持续的镜像蓝藻信号。`,
+                choices: [
+                    { text: "→ 调查深海异常", next: "deep_ocean_question" }
+                ]
+            },
+
+            hydrothermal_vents: {
+                title: "深海热泉",
+                content: `肖薇有了一个可怕的猜测。
+
+深海热泉——那些从地壳深处喷出高温富矿物质水的裂隙——是地球上最独特的生态系统之一。在那里,生命不依赖阳光，而是依赖化学能。
+
+热泉周围生活着大量的化能自养细菌,它们利用硫化氢、甲烷等化学物质作为能量来源。这些细菌支撑着一个完整的生态系统——管虫、贻贝、虾、鱼——全都生活在永恒的黑暗中。
+
+如果镜像蓝藻的孢子沉降到热泉区域，如果它们在那里萌发……
+
+理论上,镜像蓝藻是光合生物，不能利用化学能。但进化是强大的。在极端环境的选择压力下，生物可以发展出全新的代谢路径。
+
+肖薇申请了一次深海探测任务。2090年11月，她登上了日本深海研究船"未来号"，前往冲绳海槽的一个活跃热泉区。
+
+潜水器下降到水下1400米。外部温度是3.2摄氏度，但在热泉口附近,温度可以达到350摄氏度。
+
+探测机器人采集了热泉口周围不同距离的水样——从距离喷口5米到50米不等。在喷口附近，水温是85摄氏度，pH值接近6.5，充满了硫化氢。
+
+回到实验室后，肖薇分析了样品。
+
+距离喷口50米的样品：每升1200个镜像蓝藻孢子。休眠状态。
+
+距离喷口20米的样品：每升800个孢子，同样休眠。
+
+距离喷口5米的样品：每升2万个细胞。<span class="warning">活跃的。正在分裂的。</span>
+
+她提取了这些细胞，进行了基因组测序。
+
+结果让她的手开始颤抖：这些镜像蓝藻的基因组中有一段新的基因序列，编码一组她从未见过的酶。这些酶能够氧化硫化物，释放能量，就像化能自养细菌那样。
+
+镜像蓝藻在进化。
+
+它们不再完全依赖光合作用。它们开始适应深海环境。`,
+                timestamp: "2090年11月",
+                choices: [
+                    { text: "→ 上报发现", next: "deep_sea_discovery" }
+                ]
+            },
+
+            deep_sea_discovery: {
+                title: "深海的威胁",
+                content: `肖薇的发现引起了国际科学界的震动。
+
+如果镜像蓝藻能够在深海热泉环境中生存和繁殖，那意味着地球上几乎没有它们无法到达的地方。
+
+热泉生态系统遍布全球海底。在大洋中脊、俯冲带、火山弧——任何有地质活动的地方，都可能有热泉。总数可能超过一百万个。
+
+而这些生态系统非常脆弱。热泉周围的生物高度特化，依赖于精确的化学平衡。如果镜像蓝藻在那里大量繁殖,会改变水化学成分，可能摧毁整个本地生态系统。
+
+但更大的问题是：深海是人类无法有效监测和控制的区域。
+
+表层海洋可以用卫星观测，可以用浮标监测，可以派船采样。但深海？全球深海的面积超过3亿平方公里，平均深度3800米。人类对深海的了解可能不如对月球表面的了解。
+
+肖薇建议扩大深海监测网络，在全球主要的热泉区域设置长期观测站。
+
+但成本是天文数字。每个深海观测站的建设和维护成本超过500万美元。要覆盖哪怕只是已知的主要热泉区域，需要数百个观测站。
+
+联合国海洋事务办公室批准了一个试点项目：在太平洋、大西洋和印度洋各选择三个热泉区域，建立九个深海观测站。
+
+2091年4月，第一批观测站开始运行。`,
+                timestamp: "2091年4月",
+                choices: [
+                    { text: "→ 六个月后，查看深海监测数据", next: "deep_sea_monitoring" }
+                ]
+            },
+
+            deep_sea_monitoring: {
+                title: "深渊的扩散",
+                content: `2091年10月，九个深海观测站传回了第一批长期监测数据。
+
+结果比最悲观的预测还要糟糕。
+
+在所有九个热泉区域，镜像蓝藻的浓度都在快速上升。在太平洋的一个热泉区（水下2800米），六个月内浓度从每升3000个细胞增加到每升50万个。在大西洋中脊的一个热泉（水下3400米），增长速度更快——浓度达到了每升120万个细胞。
+
+更令人不安的是，基因分析显示，不同热泉的镜像蓝藻正在独立地进化出相似的化能自养能力。这不是某一次随机突变的扩散，而是平行进化——环境的选择压力如此强大，以至于在多个地点同时推动了相同的适应性改变。
+
+深海生物学家报告了热泉生态系统的明显变化。在镜像蓝藻高浓度的热泉，本地的化能自养细菌密度下降了40-60%。管虫的数量也在减少。
+
+但镜像蓝藻不仅仅在热泉附近生存。观测数据显示，它们开始沿着海底扩散，远离热泉源头。在远离热泉的深海平原（水下4000-5000米），也检测到了低浓度但持续存在的镜像蓝藻种群。
+
+肖薇意识到，深海可能正在成为镜像蓝藻的巨大储库。在那里，它们不受表层海洋环境波动的影响，不受季节变化的限制，不受人类监测和控制的威胁。
+
+深渊是它们的避难所。`,
+                timestamp: "2091年10月",
+                choices: [
+                    { text: "→ 查看最新全球扩散数据", next: "dashboard_70percent" }
+                ]
+            },
+
+            dashboard_70percent: {
+                title: "全球监测：深海突破",
+                content: `2091年底，全球海洋监测系统更新了扩散模型，首次纳入了深海数据。
+
+结果让所有人震惊：如果把深海计算在内，镜像蓝藻的实际覆盖范围可能远超表层监测所显示的数据。
+
+表层海洋的镜像蓝藻浓度已经趋于稳定，但深海的扩散才刚刚开始。而深海的体积是表层海洋的数十倍。`,
+                spreadData: {
+                    percentage: 70,
+                    ocean_coverage: "全球海洋表层+部分深海区域",
+                    peak_concentration: "表层：600万细胞/升 | 深海热泉：120万细胞/升",
+                    affected_regions: "全球所有主要海域，包括深海热泉系统",
+                    ecosystem_impact: "表层生态系统重组，深海热泉生态系统开始崩溃"
+                },
+                timestamp: "2091年12月",
+                choices: [
+                    { text: "→ 最深的海洋", next: "hadal_zone" }
+                ]
+            },
+
+            hadal_zone: {
+                title: "超深渊带",
+                content: `2092年初，一个日本-美国联合研究团队在马里亚纳海沟进行了一次常规的深海生物调查。
+
+他们使用无人潜水器下降到海沟的最深处——挑战者深渊，水下10,920米。那是地球海洋的最深点。
+
+温度是1.2摄氏度。压强是海平面的1100倍。完全黑暗。这是地球上最极端的环境之一。
+
+潜水器采集了海底沉积物样本和底层水样。样本被密封在特殊的高压容器中，保持原位压力，然后被送回实验室。
+
+肖薇是分析团队的成员之一。当她在显微镜下检查水样时，她已经不再感到惊讶了。
+
+镜像蓝藻。在10,920米的深度。
+
+浓度不高——每升只有大约200个细胞。但它们在那里。活着的。
+
+基因组分析显示，这些深渊镜像蓝藻已经和表层的祖先完全不同。它们失去了大部分光合作用相关的基因——在永恒的黑暗中，那些基因已经没有用处。取而代之的是一套复杂的化能代谢系统,能够利用沉积物中的有机物和无机化合物。
+
+它们甚至不再需要氧气。它们发展出了厌氧代谢途径。
+
+这些生物已经不能被称为"蓝藻"了。它们是一种全新的东西——深海镜像化能生物。
+
+而最可怕的是：深渊是没有阳光的。人类用来控制表层藻类的紫外杀菌技术在这里完全无效。没有任何已知的生物控制手段能在那种温度和压力下运作。
+
+镜像生命找到了地球上人类永远无法触及的地方。`,
+                timestamp: "2092年2月",
+                choices: [
+                    { text: "→ 最后的报告", next: "final_report" }
+                ]
+            },
+
+            final_report: {
+                title: "终局",
+                content: `肖薇收到分析报告时正在开车。她把车停在路边，看着报告看了很久。
+
+深渊是没有阳光的。圆偏振紫外激光无法覆盖到那里。没有任何已知的生物控制手段能在那种温度和压力下运作。
+
+镜像生命找到了地球上人类永远无法触及的地方。
+
+从那一刻起，它就是地球的一部分了。`,
+                ending: true
+            }
+        };
+
+        let currentNode = 'start';
+        let spreadPercentage = 0;
+
+        function render() {
+            const node = gameData[currentNode];
+            const container = document.getElementById('game-content');
+            
+            let html = '<div class="story-section">';
+            html += `<h2>${node.title}</h2>`;
+            
+            if (typeof node.content === 'string') {
+                const paragraphs = node.content.split('\n\n');
+                paragraphs.forEach(p => {
+                    if (p.trim()) {
+                        html += `<p>${p.trim()}</p>`;
+                    }
+                });
+            }
+
+            if (node.data) {
+                html += '<div class="data-panel"><h3>// 数据记录</h3>';
+                for (const [key, value] of Object.entries(node.data)) {
+                    html += `<div class="data-row">
+                        <span class="data-label">${key}:</span>
+                        <span class="data-value">${value}</span>
+                    </div>`;
+                }
+                html += '</div>';
+            }
+
+            if (node.spreadData) {
+                spreadPercentage = node.spreadData.percentage;
+                html += '<div class="spread-monitor">';
+                html += '<h3>镜像生命全球扩散监测系统</h3>';
+                html += '<div class="spread-bar-container">';
+                html += `<div class="spread-bar" style="width: ${spreadPercentage}%">`;
+                html += `<span class="spread-percentage">${spreadPercentage}%</span>`;
+                html += '</div></div>';
+                
+                html += '<div class="spread-details">';
+                html += `<div class="spread-detail-item">
+                    <h4>海域覆盖</h4>
+                    <p>${node.spreadData.ocean_coverage}</p>
+                </div>`;
+                html += `<div class="spread-detail-item">
+                    <h4>峰值浓度</h4>
+                    <p>${node.spreadData.peak_concentration}</p>
+                </div>`;
+                html += `<div class="spread-detail-item">
+                    <h4>影响区域</h4>
+                    <p>${node.spreadData.affected_regions}</p>
+                </div>`;
+                html += `<div class="spread-detail-item">
+                    <h4>生态影响</h4>
+                    <p>${node.spreadData.ecosystem_impact}</p>
+                </div>`;
+                html += '</div>';
+
+                // Add map visualization
+                html += '<div class="map-placeholder">';
+                html += '<svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">';
+                html += '<rect x="0" y="0" width="800" height="300" fill="rgba(10,14,39,0.8)"/>';
+                
+                // Ocean map outline (simplified continents)
+                html += '<path d="M 100 150 Q 150 100 200 120 T 300 140 L 320 160 L 340 150 Q 380 130 420 145 T 500 155 L 520 170 Q 560 160 600 150 L 650 140 Q 680 150 700 160" stroke="#667eea" stroke-width="1" fill="none" opacity="0.3"/>';
+                
+                // Spread visualization - increasing red zones
+                const zones = Math.floor(spreadPercentage / 10);
+                for (let i = 0; i < zones; i++) {
+                    const x = 100 + (i * 60);
+                    const y = 140 + (Math.sin(i) * 20);
+                    const radius = 20 + (spreadPercentage / 10);
+                    const opacity = 0.3 + (spreadPercentage / 200);
+                    html += `<circle cx="${x}" cy="${y}" r="${radius}" fill="#ff6b6b" opacity="${opacity}"/>`;
+                }
+                
+                html += '</svg>';
+                html += '</div>';
+                
+                html += '</div>';
+            }
+
+            if (node.timestamp) {
+                html += `<p class="timestamp">${node.timestamp}</p>`;
+            }
+
+            if (node.ending) {
+                html += '<div class="ending">';
+                html += '<h2>— END —</h2>';
+                html += '<p>一个科幻推理故事</p>';
+                html += '<p>关于镜像生命、生态系统与人类的极限</p>';
+                html += '</div>';
+            } else if (node.choices) {
+                html += '<div class="choices">';
+                node.choices.forEach((choice, index) => {
+                    html += `<button class="choice-btn" onclick="choose('${choice.next}')">${choice.text}</button>`;
+                });
+                html += '</div>';
+            }
+
+            html += '</div>';
+            container.innerHTML = html;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function choose(nextNode) {
+            currentNode = nextNode;
+            render();
+        }
+
+        // Initialize
+        render();
+    </script>
+</body>
+</html>
